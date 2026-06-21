@@ -5,7 +5,6 @@ import org.yearup.models.Product;
 import org.yearup.repository.ProductRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService
@@ -17,7 +16,7 @@ public class ProductService
         this.productRepository = productRepository;
     }
 
-    public List<Product> search(Integer categoryId, Double minPrice, Double maxPrice, String subCategory)
+    public List<Product> search(Integer categoryId, Double minPrice, Double maxPrice, String subCategory, Boolean isFeatured)
     {
         List<Product> products = categoryId != null
                 ? productRepository.findByCategoryId(categoryId)
@@ -27,7 +26,7 @@ public class ProductService
                        .filter(p -> minPrice == null || p.getPrice() >= minPrice)
                        .filter(p -> maxPrice == null || p.getPrice() <= maxPrice)
                        .filter(p -> subCategory == null || subCategory.equalsIgnoreCase(p.getSubCategory()))
-                       .filter(Product::isFeatured)
+                       .filter(p-> isFeatured == null|| !isFeatured ||p.isFeatured() )
                        .toList();
     }
 
@@ -57,6 +56,7 @@ public class ProductService
         existing.setSubCategory(product.getSubCategory());
         existing.setFeatured(product.isFeatured());
         existing.setImageUrl(product.getImageUrl());
+        existing.setStock(product.getStock());
         return productRepository.save(existing);
     }
 
