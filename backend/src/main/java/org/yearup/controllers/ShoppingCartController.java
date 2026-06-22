@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.yearup.models.ShoppingCart;
+import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 import org.yearup.service.ShoppingCartService;
 import org.yearup.service.UserService;
@@ -59,8 +60,7 @@ public class ShoppingCartController
      * @param principal
      * @return usersShoppingCart
      */
-    @PostMapping
-    @RequestMapping("/products/{productId}")
+    @PostMapping("/products/{productId}")
     public ResponseEntity<ShoppingCart> addProduct(@PathVariable int productId, Principal principal){
         //Get users id to add product in their cart
         String userName = principal.getName();
@@ -77,6 +77,21 @@ public class ShoppingCartController
     // https://localhost:8080/cart/products/15  (15 is the productId to be updated)
     // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated; return the cart (200 OK)
 
+    /***
+     * it only update a product quantity
+     * @param principal
+     * @return UserShoppingCart
+     */
+    @PutMapping("/products/{id}")
+    public ResponseEntity<ShoppingCart> updateProductQuantity (@PathVariable int id, @RequestBody ShoppingCartItem item, Principal principal){
+        //Get users id to update product quantity in their cart
+        String userName = principal.getName();
+        User user = userService.getByUserName(userName);
+        int userId = user.getId();
+        ShoppingCart userShoppingCart  = shoppingCartService.updateProduct(userId,item, id);
+        return ResponseEntity.ok(userShoppingCart);
+    }
+
 
     // add a DELETE method to clear all products from the current users cart
     // https://localhost:8080/cart  - return the (now empty) cart so the front end can refresh it (200 OK)
@@ -87,7 +102,7 @@ public class ShoppingCartController
      * @return empty ShoppingCart
      */
     @DeleteMapping
-    public ResponseEntity<ShoppingCart> deleteAllProducts(Principal principal){
+    public ResponseEntity<ShoppingCart> clearCart(Principal principal){
         //Get users id to deleteAll product in their cart
         String userName = principal.getName();
         User user = userService.getByUserName(userName);
