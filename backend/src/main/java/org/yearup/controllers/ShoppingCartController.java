@@ -52,6 +52,13 @@ public class ShoppingCartController
     // add a POST method to add a product to the cart - the url should be
     // https://localhost:8080/cart/products/15  (15 is the productId to be added)
     // return the updated cart with status 201 Created
+
+    /***
+     * Only users can access this method,it adds a product to the userCart
+     * @param productId
+     * @param principal
+     * @return usersShoppingCart
+     */
     @PostMapping
     @RequestMapping("/products/{productId}")
     public ResponseEntity<ShoppingCart> addProduct(@PathVariable int productId, Principal principal){
@@ -73,9 +80,15 @@ public class ShoppingCartController
 
     // add a DELETE method to clear all products from the current users cart
     // https://localhost:8080/cart  - return the (now empty) cart so the front end can refresh it (200 OK)
+
+    /***
+     * Only users can access this method
+     * @param principal
+     * @return empty ShoppingCart
+     */
     @DeleteMapping
     public ResponseEntity<ShoppingCart> deleteAllProducts(Principal principal){
-        //Get users id to add product in their cart
+        //Get users id to deleteAll product in their cart
         String userName = principal.getName();
         User user = userService.getByUserName(userName);
         int userId = user.getId();

@@ -1,6 +1,5 @@
 package org.yearup.service;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.yearup.models.CartItem;
 import org.yearup.models.Product;
@@ -43,7 +42,14 @@ public class ShoppingCartService
       CartItem product = new CartItem();
       product.setUserId(userId);
       product.setProductId(productId);
-      shoppingCartRepository.save(product);
+      CartItem exitingUserAndProduct =  shoppingCartRepository.findByUserIdAndProductId(userId,productId);
+      if (exitingUserAndProduct == null)
+        shoppingCartRepository.save(product);
+      else {
+          int quantity = exitingUserAndProduct.getQuantity();
+          exitingUserAndProduct.setQuantity(++quantity);
+          shoppingCartRepository.save(exitingUserAndProduct);
+      }
       return getByUserId(userId);
     }
 
