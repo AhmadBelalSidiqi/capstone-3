@@ -1,10 +1,10 @@
 package org.yearup.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.yearup.models.ShoppingCart;
 import org.yearup.models.User;
 import org.yearup.service.ShoppingCartService;
@@ -39,7 +39,7 @@ public class ShoppingCartController
     @GetMapping
     public ShoppingCart getCart(Principal principal)
     {
-        // get the currently logged in username
+        // get the currently logged-in username
         String userName = principal.getName();
         // find database user by username
         User user = userService.getByUserName(userName);
@@ -52,6 +52,18 @@ public class ShoppingCartController
     // add a POST method to add a product to the cart - the url should be
     // https://localhost:8080/cart/products/15  (15 is the productId to be added)
     // return the updated cart with status 201 Created
+    @PostMapping
+    @RequestMapping("/products/{productId}")
+    public ResponseEntity<ShoppingCart> addProduct(@PathVariable int productId, Principal principal){
+        //Get users id to add product in their cart
+        String userName = principal.getName();
+        User user = userService.getByUserName(userName);
+        int userId = user.getId();
+        ShoppingCart userShoppingCart = shoppingCartService.addProduct(userId , productId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userShoppingCart);
+
+    }
 
 
     // add a PUT method to update an existing product in the cart - the url should be
@@ -61,5 +73,15 @@ public class ShoppingCartController
 
     // add a DELETE method to clear all products from the current users cart
     // https://localhost:8080/cart  - return the (now empty) cart so the front end can refresh it (200 OK)
+    @DeleteMapping
+    public ResponseEntity<ShoppingCart> deleteAllProducts(Principal principal){
+        //Get users id to add product in their cart
+        String userName = principal.getName();
+        User user = userService.getByUserName(userName);
+        int userId = user.getId();
+        shoppingCartService.deleteAllProducts(userId);
+        ShoppingCart userShoppingCart = shoppingCartService.getByUserId(userId);
+        return ResponseEntity.ok(userShoppingCart);
+    }
 
 }
