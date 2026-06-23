@@ -29,6 +29,11 @@ public class OrderController {
         this.userService = userService;
     }
 
+    /**
+     * Converts the current user's shopping cart into an order.
+     * Returns 201 if successful.
+     * Returns 400 if the cart is empty.
+     */
     @PostMapping
     public ResponseEntity<Void> checkout(Principal principal){
         String userName = principal.getName();

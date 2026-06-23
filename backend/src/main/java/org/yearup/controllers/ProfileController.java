@@ -16,16 +16,21 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/profile")
 @PreAuthorize("hasRole('ROLE_USER')")
-class UserController {
+@CrossOrigin(origins = "*")
+public class ProfileController {
     private final UserService userService;
     private final ProfileService profileService;
 
     @Autowired
-    public UserController(UserService userService, ProfileService profileService) {
+    public ProfileController(UserService userService, ProfileService profileService) {
         this.userService = userService;
         this.profileService = profileService;
     }
 
+
+    /**
+     * Retrieves the current user's profile.
+     */
     @GetMapping
     public ResponseEntity<Profile> profile(Principal principal){
         String userName = principal.getName();
@@ -35,6 +40,10 @@ class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
+
+    /**
+     * Updates the current user's profile.
+     */
     @PutMapping
     public ResponseEntity<Profile> updateProfile(@RequestBody Profile profile, Principal principal){
         String userName = principal.getName();

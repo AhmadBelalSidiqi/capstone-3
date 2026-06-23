@@ -12,8 +12,8 @@ import org.yearup.service.ProductService;
 import java.util.List;
 
 @RestController
-@RequestMapping("products")
-@CrossOrigin
+@RequestMapping("/products")
+@CrossOrigin(origins = "*")
 public class ProductsController {
     private final ProductService productService;
 
@@ -24,8 +24,7 @@ public class ProductsController {
     }
 
     @GetMapping("")
-    @PreAuthorize("permitAll()")
-    public List<Product> search(@RequestParam(name = "cat", required = false) Integer categoryId,
+    public List<Product> searchProducts(@RequestParam(name = "cat", required = false) Integer categoryId,
                                 @RequestParam(name = "minPrice", required = false) Double minPrice,
                                 @RequestParam(name = "maxPrice", required = false) Double maxPrice,
                                 @RequestParam(name = "subCategory", required = false) String subCategory,
@@ -36,13 +35,10 @@ public class ProductsController {
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("permitAll()")
     public Product getById(@PathVariable int id) {
         Product product = productService.getById(id);
-
         if (product == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
         return product;
     }
 

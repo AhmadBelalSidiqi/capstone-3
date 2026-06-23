@@ -13,16 +13,14 @@ import org.yearup.service.UserService;
 
 import java.security.Principal;
 
-// convert this class to a REST controller
-// only logged_in users should have access to these actions\
 @RestController
 @RequestMapping("/cart")
 @PreAuthorize("hasRole('ROLE_USER')")
+@CrossOrigin(origins = "*")
 public class ShoppingCartController
 {
-    // a shopping cart controller depends on the service layer
-    private ShoppingCartService shoppingCartService;
-    private UserService userService;
+    private final ShoppingCartService shoppingCartService;
+    private final UserService userService;
 
     @Autowired
     public ShoppingCartController(ShoppingCartService shoppingCartService, UserService userService) {
@@ -30,42 +28,26 @@ public class ShoppingCartController
         this.userService = userService;
     }
 
-    // each method in this controller requires a Principal object as a parameter
-
     /***
      * Only users can access this method
-     * @param principal
      * @return User's shopping cart
      */
     @GetMapping
     public ShoppingCart getCart(Principal principal)
     {
         // get the currently logged-in username
-        String userName = principal.getName();
-        // find database user by username
-        User user = userService.getByUserName(userName);
-        int userId = user.getId();
-
-        // use the shoppingCartService to get all items in the cart and return the cart
+        int userId = getCurrentUserId(principal);
         return shoppingCartService.getByUserId(userId);
     }
 
-    // add a POST method to add a product to the cart - the url should be
-    // https://localhost:8080/cart/products/15  (15 is the productId to be added)
-    // return the updated cart with status 201 Created
-
     /***
      * Only users can access this method,it adds a product to the userCart
-     * @param productId
-     * @param principal
      * @return usersShoppingCart
      */
     @PostMapping("/products/{productId}")
     public ResponseEntity<ShoppingCart> addProduct(@PathVariable int productId, Principal principal){
         //Get users id to add product in their cart
-        String userName = principal.getName();
-        User user = userService.getByUserName(userName);
-        int userId = user.getId();
+        int userId = getCurrentUserId(principal);
         ShoppingCart userShoppingCart = shoppingCartService.addProduct(userId , productId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userShoppingCart);
@@ -73,43 +55,35 @@ public class ShoppingCartController
     }
 
 
-    // add a PUT method to update an existing product in the cart - the url should be
-    // https://localhost:8080/cart/products/15  (15 is the productId to be updated)
-    // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated; return the cart (200 OK)
-
-    /***
-     * it only update a product quantity
-     * @param principal
-     * @return UserShoppingCart
+    /**
+     * Updates the quantity of a product in the user's cart.
      */
-    @PutMapping("/products/{id}")
-    public ResponseEntity<ShoppingCart> updateProductQuantity (@PathVariable int id, @RequestBody ShoppingCartItem item, Principal principal){
+    @PutMapping("/products/{productId}")
+    public ResponseEntity<ShoppingCart> updateProductQuantity (@PathVariable int productId, @RequestBody ShoppingCartItem item, Principal principal){
         //Get users id to update product quantity in their cart
-        String userName = principal.getName();
-        User user = userService.getByUserName(userName);
-        int userId = user.getId();
-        ShoppingCart userShoppingCart  = shoppingCartService.updateProduct(userId,item, id);
+        int userId = getCurrentUserId(principal);
+        ShoppingCart userShoppingCart  = shoppingCartService.updateProduct(userId,item, productId);
         return ResponseEntity.ok(userShoppingCart);
     }
 
 
-    // add a DELETE method to clear all products from the current users cart
-    // https://localhost:8080/cart  - return the (now empty) cart so the front end can refresh it (200 OK)
-
     /***
      * Only users can access this method
-     * @param principal
      * @return empty ShoppingCart
      */
     @DeleteMapping
     public ResponseEntity<ShoppingCart> clearCart(Principal principal){
         //Get users id to deleteAll product in their cart
-        String userName = principal.getName();
-        User user = userService.getByUserName(userName);
-        int userId = user.getId();
+        int userId = getCurrentUserId(principal);
         shoppingCartService.deleteAllProducts(userId);
         ShoppingCart userShoppingCart = shoppingCartService.getByUserId(userId);
         return ResponseEntity.ok(userShoppingCart);
+    }
+
+    private int getCurrentUserId(Principal principal) {
+        String username = principal.getName();
+        User user = userService.getByUserName(username);
+        return user.getId();
     }
 
 }

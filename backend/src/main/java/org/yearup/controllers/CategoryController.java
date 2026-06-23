@@ -17,45 +17,37 @@ import java.util.List;
 @RestController
 @RequestMapping("/categories")
 @CrossOrigin(origins = "*")
-public class CategoriesController
-{
+public class CategoryController {
     private final CategoryService categoryService;
     private final ProductService productService;
 
 
     @Autowired
-    public CategoriesController(CategoryService categoryService, ProductService productService) {
+    public CategoryController(CategoryService categoryService, ProductService productService) {
         this.categoryService = categoryService;
         this.productService = productService;
     }
 
 
     /***
-     * Everyone can access this method
-     * @return All Category
+     * Retrieves all categories.
+     * Accessible by all users.
      */
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Category> getAll()
-    {
-        // find and return all categories
-        return categoryService.getAllCategories();
+    public ResponseEntity<List<Category>> getAll() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
 
-    /***
-     * Response Code 200 if Category with corresponding id exited else 404.
-     * @return category
+    /**
+     * Retrieves a category by ID.
+     * Returns 200 if found, otherwise 404.
      */
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Category getById(@PathVariable int id)
-    {
-        // get the category by id
-        return categoryService.getById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public ResponseEntity<Category> getById(@PathVariable int id) {
+        return ResponseEntity.ok(categoryService.getById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
-
 
 
     /***
@@ -63,11 +55,8 @@ public class CategoriesController
      * @return list of products by categoryId
      */
     @GetMapping("{categoryId}/products")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Product> getProductsById(@PathVariable int categoryId)
-    {
-        // get a list of product by categoryId
-        return productService.listByCategoryId(categoryId);
+    public ResponseEntity<List<Product>> getProductsById(@PathVariable int categoryId) {
+        return ResponseEntity.ok(productService.listByCategoryId(categoryId));
     }
 
     /***
@@ -76,8 +65,7 @@ public class CategoriesController
      */
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Category> addCategory(@RequestBody Category category)
-    {
+    public ResponseEntity<Category> addCategory(@RequestBody Category category) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(categoryService.create(category));
     }
@@ -89,18 +77,15 @@ public class CategoriesController
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    public Category updateCategory(@PathVariable int id, @RequestBody Category category)
-    {
-        // update the category by id and return the updated category (200 OK)
-        return categoryService.update(id,category).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category category) {
+        return ResponseEntity.ok(categoryService.update(id, category)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteCategory(@PathVariable int id)
-    {
+    public ResponseEntity<Void> deleteCategory(@PathVariable int id) {
         categoryService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
