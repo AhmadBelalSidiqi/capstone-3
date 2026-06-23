@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import org.yearup.models.Order;
 
 @Repository
-interface OrderRepository extends JpaRepository<Order, Integer> {
+public interface OrderRepository extends JpaRepository<Order, Integer> {
 }
