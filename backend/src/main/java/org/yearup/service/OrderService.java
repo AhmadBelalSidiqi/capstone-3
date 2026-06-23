@@ -2,7 +2,9 @@ package org.yearup.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.models.*;
 import org.yearup.repository.OrderLineItemsRepository;
 import org.yearup.repository.OrderRepository;
@@ -32,7 +34,10 @@ public class OrderService {
     }
     @Transactional
     public void checkout(User user){
-        Profile userProfile = profileService.getProfileByUserId(user.getId()).orElseThrow();
+        Profile userProfile = profileService.getProfileByUserId(user.getId()).orElseThrow(() -> new NullPointerException("User not found"));
+        List<CartItem> userCartItem = shoppingCartRepository.findByUserId(user.getId());
+        if (userCartItem.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         Order order = new Order();
         order.setUserID(userProfile.getUserId());
         order.setDateTime(LocalDateTime.now());
@@ -42,9 +47,8 @@ public class OrderService {
         order.setZip(userProfile.getZip());
         order.setShippingAmount(0);
 
-       Order savedOrder = orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
 
-        List<CartItem> userCartItem = shoppingCartRepository.findByUserId(user.getId());
         for(CartItem item : userCartItem){
             Product product = productService.getById(item.getProductId());
             OrderLineItem orderLineItem = new OrderLineItem();
