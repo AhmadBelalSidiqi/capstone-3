@@ -1,0 +1,88 @@
+package org.yearup.models;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "order_line_items")
+public class OrderLineItems {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_line_item_id")
+    private int orderLineItemId;
+
+    @Column(name = "order_id")
+    private int orderId;
+
+    @Column(name = "product_id")
+    private int productId;
+
+    @Column(name = "sales_price")
+    private double salesPrice;
+
+    @Column(name = "quantity")
+    private int quantity;
+
+    @Column(name = "discount")
+    private double discount;
+
+    public OrderLineItems() {
+    }
+
+    public OrderLineItems(int orderLineItemId, int orderId, int productId, double salesPrice, int quantity, double discount) {
+        this.orderLineItemId = orderLineItemId;
+        this.orderId = orderId;
+        this.productId = productId;
+        this.salesPrice = salesPrice;
+        this.quantity = quantity;
+        this.discount = discount;
+    }
+
+    public void setOrderLineItemId(int orderLineItemId) {
+        this.orderLineItemId = orderLineItemId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public void setSalesPrice(double salesPrice) {
+        this.salesPrice = salesPrice;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
+    public int getOrderLineItemId() {
+        return orderLineItemId;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public double getSalesPrice() {
+        return salesPrice;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
+}
