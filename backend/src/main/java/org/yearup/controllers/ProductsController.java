@@ -52,9 +52,6 @@ public class ProductsController {
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Product updateProduct(@PathVariable int id, @RequestBody Product product) {
-        if (productService.getById(id) == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
         return productService.update(id, product);
     }
 

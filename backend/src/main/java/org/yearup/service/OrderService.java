@@ -37,7 +37,7 @@ public class OrderService {
         Profile userProfile = profileService.getProfileByUserId(user.getId()).orElseThrow(() -> new NullPointerException("User not found"));
         List<CartItem> userCartItem = shoppingCartRepository.findByUserId(user.getId());
         if (userCartItem.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is Empty ");
         Order order = new Order();
         order.setUserID(userProfile.getUserId());
         order.setDateTime(LocalDateTime.now());
