@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "order_line_items")
-public class OrderLineItems {
+public class OrderLineItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +26,10 @@ public class OrderLineItems {
     @Column(name = "discount")
     private double discount;
 
-    public OrderLineItems() {
+    public OrderLineItem() {
     }
 
-    public OrderLineItems(int orderLineItemId, int orderId, int productId, double salesPrice, int quantity, double discount) {
+    public OrderLineItem(int orderLineItemId, int orderId, int productId, double salesPrice, int quantity, double discount) {
         this.orderLineItemId = orderLineItemId;
         this.orderId = orderId;
         this.productId = productId;
