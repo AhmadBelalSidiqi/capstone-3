@@ -45,9 +45,9 @@ public class ShoppingCartService
       CartItem existingItem =  shoppingCartRepository.findByUserIdAndProductId(userId,productId);
 
       if (existingItem == null)
-          // increase the quantity if the user already have the product
         shoppingCartRepository.save(cartItem);
       else {
+          // increase the quantity if the user already have the product
           int quantity = existingItem.getQuantity();
           existingItem.setQuantity(++quantity);
           shoppingCartRepository.save(existingItem);
