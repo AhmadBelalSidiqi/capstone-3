@@ -93,12 +93,18 @@ class UserService {
 
         axios.post(url, register)
              .then(response => {
-                 console.log(response.data)
+                 const data = {
+                     message: "Registration successful. You can now log in."
+                 };
+
+                 templateBuilder.append("message", data, "errors")
+                 hideModalForm();
              })
             .catch(error => {
+                const message = error.response && error.response.data ? error.response.data : "User registration failed.";
 
                 const data = {
-                    error: "User registration failed."
+                    error: message
                 };
 
                 templateBuilder.append("error", data, "errors")
@@ -136,12 +142,6 @@ class UserService {
         localStorage.removeItem('user');
         delete axios.defaults.headers.common.Authorization;
         this.currentUser = {};
-
-        if (cartService)
-        {
-            cartService.cart = { items: [], total: 0 };
-            cartService.updateCartDisplay();
-        }
 
         this.setHeaderLogin();
 

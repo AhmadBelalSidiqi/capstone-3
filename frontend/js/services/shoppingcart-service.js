@@ -43,33 +43,37 @@ class ShoppingCartService {
         }
     }
 
-    loadCart()
+    loadCart(callback)
     {
-
         const url = `${config.baseUrl}/cart`;
 
         axios.get(url)
             .then(response => {
                 this.setCart(response.data)
-
                 this.updateCartDisplay()
-
+                if(callback) callback();
             })
             .catch(error => {
-
                 const data = {
                     error: "Load cart failed."
                 };
 
                 templateBuilder.append("error", data, "errors")
             })
-
     }
 
     loadCartPage()
     {
-        // templateBuilder.build("cart", this.cart, "main");
+        if(userService.isLoggedIn()) {
+            this.loadCart(() => this.renderCartPage());
+        }
+        else {
+            this.renderCartPage();
+        }
+    }
 
+    renderCartPage()
+    {
         const main = document.getElementById("main")
         main.innerHTML = "";
 
@@ -88,41 +92,69 @@ class ShoppingCartService {
         h1.innerText = "Cart";
         cartHeader.appendChild(h1);
 
-        const button = document.createElement("button");
-        button.classList.add("btn")
-        button.classList.add("btn-danger")
-        button.innerText = "Clear";
-        button.addEventListener("click", () => this.clearCart());
-        cartHeader.appendChild(button)
+        const actions = document.createElement("div")
+        actions.classList.add("cart-actions")
+
+        const clearButton = document.createElement("button");
+        clearButton.classList.add("btn", "btn-outline-danger")
+        clearButton.innerText = "Clear";
+        clearButton.addEventListener("click", () => this.clearCart());
+        actions.appendChild(clearButton)
 
         const checkoutButton = document.createElement("button");
-        checkoutButton.classList.add("btn")
-        checkoutButton.classList.add("btn-success")
-        checkoutButton.classList.add("ms-2")
+        checkoutButton.classList.add("btn", "btn-success", "ms-2")
         checkoutButton.innerText = "Checkout";
+        checkoutButton.disabled = this.cart.items.length === 0 || !userService.isLoggedIn();
         checkoutButton.addEventListener("click", () => this.checkout());
-        checkoutButton.disabled = this.cart.items.length === 0;
-        cartHeader.appendChild(checkoutButton)
+        actions.appendChild(checkoutButton)
 
-        const totalDiv = document.createElement("div");
-        totalDiv.classList.add("cart-total");
-        totalDiv.innerText = `Total: $${this.cart.total.toFixed(2)}`;
-        contentDiv.appendChild(totalDiv);
-
+        cartHeader.appendChild(actions)
         contentDiv.appendChild(cartHeader)
-        main.appendChild(contentDiv);
 
-        if (this.cart.items.length === 0) {
-            const emptyDiv = document.createElement("div");
-            emptyDiv.classList.add("empty-cart");
-            emptyDiv.innerText = "Your cart is empty.";
-            contentDiv.appendChild(emptyDiv);
+        if(this.cart.items.length === 0)
+        {
+            const empty = document.createElement("div")
+            empty.classList.add("empty-cart")
+            empty.innerText = userService.isLoggedIn() ? "Your cart is empty." : "Log in to add products to your cart."
+            contentDiv.appendChild(empty)
         }
-        else {
+        else
+        {
             this.cart.items.forEach(item => {
                 this.buildItem(item, contentDiv)
             });
+
+            const totalDiv = document.createElement("div");
+            totalDiv.classList.add("cart-total");
+            totalDiv.innerText = `Order Total: $${this.cart.total.toFixed(2)}`;
+            contentDiv.appendChild(totalDiv);
         }
+
+        main.appendChild(contentDiv);
+    }
+
+    checkout()
+    {
+        if(!userService.isLoggedIn())
+        {
+            const data = { error: "Please log in before checking out." };
+            templateBuilder.append("error", data, "errors");
+            return;
+        }
+
+        const url = `${config.baseUrl}/orders`;
+        axios.post(url)
+            .then(() => {
+                this.cart = { items: [], total: 0 };
+                this.updateCartDisplay();
+                const data = { message: "Checkout complete! Your order has been placed." };
+                templateBuilder.append("message", data, "errors");
+                this.loadCartPage();
+            })
+            .catch(error => {
+                const data = { error: "Checkout failed. Please try again." };
+                templateBuilder.append("error", data, "errors");
+            });
     }
 
     buildItem(item, parent)
@@ -192,35 +224,6 @@ class ShoppingCartService {
 
                  templateBuilder.append("error", data, "errors")
              })
-    }
-
-    checkout()
-    {
-        const url = `${config.baseUrl}/orders`;
-
-        axios.post(url, {})
-            .then(response => {
-                const data = {
-                    message: "Checkout completed successfully."
-                };
-
-                templateBuilder.append("message", data, "errors")
-
-                this.cart = {
-                    items: [],
-                    total: 0
-                };
-
-                this.updateCartDisplay();
-                this.loadCartPage();
-            })
-            .catch(error => {
-                const data = {
-                    error: "Checkout failed."
-                };
-
-                templateBuilder.append("error", data, "errors")
-            });
     }
 
     updateCartDisplay()

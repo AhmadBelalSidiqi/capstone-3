@@ -4,6 +4,11 @@ function showLoginForm()
     templateBuilder.build('login-form', {}, 'login');
 }
 
+function showRegisterForm()
+{
+    templateBuilder.build('register-form', {}, 'login');
+}
+
 function hideModalForm()
 {
     templateBuilder.clear('login');
@@ -15,7 +20,16 @@ function login()
     const password = document.getElementById("password").value;
 
     userService.login(username, password);
-    hideModalForm()
+    hideModalForm();
+}
+
+function register()
+{
+    const username = document.getElementById("register-username").value;
+    const password = document.getElementById("register-password").value;
+    const confirm = document.getElementById("confirm-password").value;
+
+    userService.register(username, password, confirm);
 }
 
 function showImageDetailForm(product, imageUrl)
@@ -30,10 +44,10 @@ function showImageDetailForm(product, imageUrl)
 
 function loadHome()
 {
-    templateBuilder.build('home', {}, 'main', () => {
-        productService.search();
-        categoryService.getAllCategories(loadCategories);
-    });
+    templateBuilder.build('home',{},'main')
+
+    productService.search();
+    categoryService.getAllCategories(loadCategories);
 }
 
 function editProfile()
@@ -105,11 +119,10 @@ function setMinPrice(control)
 
 function setMaxPrice(control)
 {
-    // const slider = document.getElementById("min-price");
     const label = document.getElementById("max-price-display")
     label.innerText = control.value;
 
-    const value = control.value != 200 ? control.value : "";
+    const value = control.value;
     productService.addMaxPriceFilter(value)
     productService.search();
 

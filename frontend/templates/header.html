@@ -1,7 +1,10 @@
 
 {{#loggedin}}
 <div id="links">
-    <img src="images/logo.svg" alt="videographies logo">
+    <div class="logo">
+        <img src="/images/logo.svg" alt="videogamestore logo">
+        <span class="logo-text">Video Game Store</span>
+    </div>
     <a href="#" onclick="loadHome()">Home</a>
     <a href="#" onclick="editProfile()">Profile</a>
     <a href="#" onclick="showCart()">View Cart</a>
@@ -17,11 +20,15 @@
 {{/loggedin}}
 {{#loggedout}}
 <div id="links">
-    <img src="images/logo.svg" alt="videographies logo">
+    <div class="logo">
+        <img src="images/logo.svg" alt="videogamestore logo" onerror="this.style.display='none'">
+        <span class="logo-text">Video Game Store</span>
+    </div>
     <a href="#" onclick="loadHome()">Home</a>
 </div>
 
-<div>
-    <a href="#"  onclick="showLoginForm();return false;">login</a>
+<div class="auth-links">
+    <a href="#" onclick="showLoginForm();return false;">Login</a>
+    <a href="#" onclick="showRegisterForm();return false;">Register</a>
 </div>
 {{/loggedout}}
