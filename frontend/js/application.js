@@ -30,10 +30,10 @@ function showImageDetailForm(product, imageUrl)
 
 function loadHome()
 {
-    templateBuilder.build('home',{},'main')
-
-    productService.search();
-    categoryService.getAllCategories(loadCategories);
+    templateBuilder.build('home', {}, 'main', () => {
+        productService.search();
+        categoryService.getAllCategories(loadCategories);
+    });
 }
 
 function editProfile()

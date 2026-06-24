@@ -95,13 +95,34 @@ class ShoppingCartService {
         button.addEventListener("click", () => this.clearCart());
         cartHeader.appendChild(button)
 
+        const checkoutButton = document.createElement("button");
+        checkoutButton.classList.add("btn")
+        checkoutButton.classList.add("btn-success")
+        checkoutButton.classList.add("ms-2")
+        checkoutButton.innerText = "Checkout";
+        checkoutButton.addEventListener("click", () => this.checkout());
+        checkoutButton.disabled = this.cart.items.length === 0;
+        cartHeader.appendChild(checkoutButton)
+
+        const totalDiv = document.createElement("div");
+        totalDiv.classList.add("cart-total");
+        totalDiv.innerText = `Total: $${this.cart.total.toFixed(2)}`;
+        contentDiv.appendChild(totalDiv);
+
         contentDiv.appendChild(cartHeader)
         main.appendChild(contentDiv);
 
-        // let parent = document.getElementById("cart-item-list");
-        this.cart.items.forEach(item => {
-            this.buildItem(item, contentDiv)
-        });
+        if (this.cart.items.length === 0) {
+            const emptyDiv = document.createElement("div");
+            emptyDiv.classList.add("empty-cart");
+            emptyDiv.innerText = "Your cart is empty.";
+            contentDiv.appendChild(emptyDiv);
+        }
+        else {
+            this.cart.items.forEach(item => {
+                this.buildItem(item, contentDiv)
+            });
+        }
     }
 
     buildItem(item, parent)
@@ -171,6 +192,35 @@ class ShoppingCartService {
 
                  templateBuilder.append("error", data, "errors")
              })
+    }
+
+    checkout()
+    {
+        const url = `${config.baseUrl}/orders`;
+
+        axios.post(url, {})
+            .then(response => {
+                const data = {
+                    message: "Checkout completed successfully."
+                };
+
+                templateBuilder.append("message", data, "errors")
+
+                this.cart = {
+                    items: [],
+                    total: 0
+                };
+
+                this.updateCartDisplay();
+                this.loadCartPage();
+            })
+            .catch(error => {
+                const data = {
+                    error: "Checkout failed."
+                };
+
+                templateBuilder.append("error", data, "errors")
+            });
     }
 
     updateCartDisplay()
