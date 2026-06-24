@@ -15,7 +15,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/profile")
-@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 @CrossOrigin(origins = "*")
 public class ProfileController {
     private final UserService userService;
