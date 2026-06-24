@@ -20,6 +20,7 @@ public class OrderService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ProfileService profileService;
     private final ProductService productService;
+
     @Autowired
     public OrderService(OrderRepository orderRepository,
                         OrderLineItemsRepository orderLineItemsRepository,
@@ -42,9 +43,9 @@ public class OrderService {
      * 4. Clear the shopping cart
      */
     @Transactional
-    public void checkout( int userId ){
+    public void checkout(int userId) {
         Profile userProfile = profileService.getProfileByUserId(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Profile not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
         List<CartItem> userCartItem = shoppingCartRepository.findByUserId(userId);
         if (userCartItem.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is Empty ");
@@ -59,7 +60,7 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        for(CartItem item : userCartItem){
+        for (CartItem item : userCartItem) {
             Product product = productService.getById(item.getProductId());
             OrderLineItem orderLineItem = new OrderLineItem();
             orderLineItem.setOrderId(savedOrder.getOrderID());
@@ -67,7 +68,6 @@ public class OrderService {
             orderLineItem.setSalesPrice(product.getPrice());
             orderLineItem.setQuantity(item.getQuantity());
             orderLineItemsRepository.save(orderLineItem);
-
         }
 
         shoppingCartRepository.deleteByUserId(userId);
