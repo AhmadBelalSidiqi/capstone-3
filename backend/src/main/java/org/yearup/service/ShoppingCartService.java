@@ -39,12 +39,14 @@ public class ShoppingCartService
     }
 
     public ShoppingCart addProduct(int userId, int productId) {
-      CartItem product = new CartItem();
-      product.setUserId(userId);
-      product.setProductId(productId);
+      CartItem cartItem = new CartItem();
+      cartItem.setUserId(userId);
+      cartItem.setProductId(productId);
       CartItem existingItem =  shoppingCartRepository.findByUserIdAndProductId(userId,productId);
+
       if (existingItem == null)
-        shoppingCartRepository.save(product);
+          // increase the quantity if the user already have the product
+        shoppingCartRepository.save(cartItem);
       else {
           int quantity = existingItem.getQuantity();
           existingItem.setQuantity(++quantity);
