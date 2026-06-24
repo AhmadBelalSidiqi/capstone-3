@@ -32,10 +32,20 @@ public class OrderService {
         this.profileService = profileService;
         this.productService = productService;
     }
+
+    /**
+     * Converts a user's shopping cart into an order.
+     * Steps:
+     * 1. Validate cart is not empty
+     * 2. Create order
+     * 3. Create order line items
+     * 4. Clear the shopping cart
+     */
     @Transactional
-    public void checkout(User user){
-        Profile userProfile = profileService.getProfileByUserId(user.getId()).orElseThrow(() -> new NullPointerException("User not found"));
-        List<CartItem> userCartItem = shoppingCartRepository.findByUserId(user.getId());
+    public void checkout( int userId ){
+        Profile userProfile = profileService.getProfileByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Profile not found"));
+        List<CartItem> userCartItem = shoppingCartRepository.findByUserId(userId);
         if (userCartItem.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is Empty ");
         Order order = new Order();
@@ -60,7 +70,7 @@ public class OrderService {
 
         }
 
-        shoppingCartRepository.deleteByUserId(user.getId());
+        shoppingCartRepository.deleteByUserId(userId);
 
     }
 }

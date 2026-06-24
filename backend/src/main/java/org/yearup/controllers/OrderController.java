@@ -38,7 +38,7 @@ public class OrderController {
     public ResponseEntity<Void> checkout(Principal principal){
         String userName = principal.getName();
         User user = userService.getByUserName(userName);
-        orderService.checkout(user);
+        orderService.checkout(user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

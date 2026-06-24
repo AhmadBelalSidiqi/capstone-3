@@ -13,7 +13,6 @@ import java.util.List;
 @Service
 public class ShoppingCartService
 {
-    // a shopping cart is built from cart rows plus a product lookup for each row
     private final ShoppingCartRepository shoppingCartRepository;
     private final ProductService productService;
 
@@ -26,30 +25,30 @@ public class ShoppingCartService
     public ShoppingCart getByUserId(int userId)
     {
         // load the user's cart rows, look up each product, and build the ShoppingCart
-       List<CartItem> userCartItem = shoppingCartRepository.findByUserId(userId);
-        ShoppingCart userShoppingCart = new ShoppingCart();
-        for (CartItem item: userCartItem){
-            ShoppingCartItem usersShoppingCartItem = new ShoppingCartItem();
+       List<CartItem> cartItems = shoppingCartRepository.findByUserId(userId);
+        ShoppingCart shoppingCart = new ShoppingCart();
+        for (CartItem item: cartItems){
+            ShoppingCartItem shoppingCartItem = new ShoppingCartItem();
             Product product = productService.getById(item.getProductId());
-            usersShoppingCartItem.setProduct(product);
-            usersShoppingCartItem.setQuantity(item.getQuantity());
-            userShoppingCart.add(usersShoppingCartItem);
+            shoppingCartItem.setProduct(product);
+            shoppingCartItem.setQuantity(item.getQuantity());
+            shoppingCart.add(shoppingCartItem);
         }
 
-        return userShoppingCart;
+        return shoppingCart;
     }
 
     public ShoppingCart addProduct(int userId, int productId) {
       CartItem product = new CartItem();
       product.setUserId(userId);
       product.setProductId(productId);
-      CartItem exitingUserAndProduct =  shoppingCartRepository.findByUserIdAndProductId(userId,productId);
-      if (exitingUserAndProduct == null)
+      CartItem existingItem =  shoppingCartRepository.findByUserIdAndProductId(userId,productId);
+      if (existingItem == null)
         shoppingCartRepository.save(product);
       else {
-          int quantity = exitingUserAndProduct.getQuantity();
-          exitingUserAndProduct.setQuantity(++quantity);
-          shoppingCartRepository.save(exitingUserAndProduct);
+          int quantity = existingItem.getQuantity();
+          existingItem.setQuantity(++quantity);
+          shoppingCartRepository.save(existingItem);
       }
       return getByUserId(userId);
     }
@@ -59,11 +58,9 @@ public class ShoppingCartService
     }
 
     public ShoppingCart updateProduct(int userId, ShoppingCartItem item, int productId){
-        CartItem product = shoppingCartRepository.findByUserIdAndProductId(userId,productId);
-        product.setQuantity(item.getQuantity());
-        shoppingCartRepository.save(product);
+        CartItem newItem = shoppingCartRepository.findByUserIdAndProductId(userId,productId);
+        newItem.setQuantity(item.getQuantity());
+        shoppingCartRepository.save(newItem);
         return getByUserId(userId);
     }
-
-    // add additional methods here
 }

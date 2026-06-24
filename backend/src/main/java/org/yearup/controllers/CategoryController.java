@@ -78,8 +78,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category category) {
-        return ResponseEntity.ok(categoryService.update(id, category)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+        return ResponseEntity.ok(categoryService.update(id, category));
     }
 
 
