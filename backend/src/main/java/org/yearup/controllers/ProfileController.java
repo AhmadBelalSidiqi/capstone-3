@@ -27,12 +27,11 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-
     /**
      * Retrieves the current user's profile.
      */
     @GetMapping
-    public ResponseEntity<Profile> profile(Principal principal){
+    public ResponseEntity<Profile> profile(Principal principal) {
         String userName = principal.getName();
         User user = userService.getByUserName(userName);
         int userId = user.getId();
@@ -45,13 +44,12 @@ public class ProfileController {
      * Updates the current user's profile.
      */
     @PutMapping
-    public ResponseEntity<Profile> updateProfile(@RequestBody Profile profile, Principal principal){
+    public ResponseEntity<Profile> updateProfile(@RequestBody Profile profile, Principal principal) {
         String userName = principal.getName();
         User user = userService.getByUserName(userName);
         int userId = user.getId();
-        return ResponseEntity.ok(profileService.updateProfile(userId,profile));
+        return ResponseEntity.ok(profileService.updateProfile(userId, profile));
     }
-
 
 
 }

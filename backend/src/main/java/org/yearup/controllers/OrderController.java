@@ -36,7 +36,7 @@ public class OrderController {
      * Returns 400 if the cart is empty.
      */
     @PostMapping
-    public ResponseEntity<Order> checkout(Principal principal){
+    public ResponseEntity<Order> checkout(Principal principal) {
         String userName = principal.getName();
         User user = userService.getByUserName(userName);
         return ResponseEntity.status(HttpStatus.CREATED)
