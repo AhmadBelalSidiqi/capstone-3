@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.yearup.models.Order;
 import org.yearup.models.User;
 import org.yearup.service.OrderService;
 import org.yearup.service.UserService;
@@ -35,10 +36,10 @@ public class OrderController {
      * Returns 400 if the cart is empty.
      */
     @PostMapping
-    public ResponseEntity<Void> checkout(Principal principal){
+    public ResponseEntity<Order> checkout(Principal principal){
         String userName = principal.getName();
         User user = userService.getByUserName(userName);
-        orderService.checkout(user.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(orderService.checkout(user.getId()));
     }
 }

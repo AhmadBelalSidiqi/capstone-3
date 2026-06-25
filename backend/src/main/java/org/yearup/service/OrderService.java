@@ -43,7 +43,7 @@ public class OrderService {
      * 4. Clear the shopping cart
      */
     @Transactional
-    public void checkout(int userId) {
+    public Order checkout(int userId) {
         Profile userProfile = profileService.getProfileByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
         List<CartItem> userCartItem = shoppingCartRepository.findByUserId(userId);
@@ -71,6 +71,8 @@ public class OrderService {
         }
 
         shoppingCartRepository.deleteByUserId(userId);
+
+        return savedOrder;
 
     }
 }

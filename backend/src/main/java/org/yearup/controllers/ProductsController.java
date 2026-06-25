@@ -23,7 +23,7 @@ public class ProductsController {
         this.productService = productService;
     }
 
-    @GetMapping("")
+    @GetMapping()
     public List<Product> searchProducts(@RequestParam(name = "cat", required = false) Integer categoryId,
                                 @RequestParam(name = "minPrice", required = false) Double minPrice,
                                 @RequestParam(name = "maxPrice", required = false) Double maxPrice,

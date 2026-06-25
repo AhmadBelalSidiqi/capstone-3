@@ -60,6 +60,7 @@ public class ShoppingCartService
     }
 
     public ShoppingCart updateProduct(int userId, ShoppingCartItem item, int productId){
+        //TODO: NAMING NPE
         CartItem newItem = shoppingCartRepository.findByUserIdAndProductId(userId,productId);
         newItem.setQuantity(item.getQuantity());
         shoppingCartRepository.save(newItem);
