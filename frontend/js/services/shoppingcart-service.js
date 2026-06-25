@@ -18,7 +18,11 @@ class ShoppingCartService {
 
                 this.updateCartDisplay()
 
+                const data = { message: "Product added to cart." };
+                templateBuilder.append("message", data, "errors");
+
             })
+
             .catch(error => {
 
                 const data = {
