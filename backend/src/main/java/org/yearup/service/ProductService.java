@@ -1,5 +1,6 @@
 package org.yearup.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,6 +14,7 @@ public class ProductService
 {
     private final ProductRepository productRepository;
 
+    @Autowired
     public ProductService(ProductRepository productRepository)
     {
         this.productRepository = productRepository;
@@ -51,7 +53,8 @@ public class ProductService
 
     public Product update(int productId, Product product)
     {
-        Product existing = productRepository.findById(productId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Product existing = productRepository.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         existing.setName(product.getName());
         existing.setPrice(product.getPrice());
         existing.setCategoryId(product.getCategoryId());

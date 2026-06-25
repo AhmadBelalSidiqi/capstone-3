@@ -24,6 +24,8 @@ public class ProfileService
 
     public Profile create(Profile profile)
     {
+        if (profile == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         return profileRepository.save(profile);
     }
 /**

@@ -26,6 +26,8 @@ public class CategoryService {
     }
 
     public Category create(Category category) {
+        if (category == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         return categoryRepository.save(category);
     }
 
